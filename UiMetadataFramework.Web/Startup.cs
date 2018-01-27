@@ -7,6 +7,8 @@
 	using Microsoft.Extensions.Configuration;
 	using Microsoft.Extensions.DependencyInjection;
 	using Microsoft.Extensions.Logging;
+	using Newtonsoft.Json.Converters;
+	using Newtonsoft.Json.Serialization;
 	using StructureMap;
 	using StructureMap.TypeRules;
 	using UiMetadataFramework.Basic.Input;
@@ -66,8 +68,16 @@
 			// Add framework services.
 			services.AddMvc().AddJsonOptions(options =>
 			{
-				options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
+				options.SerializerSettings.Converters.Add(new StringEnumConverter());
 				options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Include;
+				options.SerializerSettings.ContractResolver = new DefaultContractResolver
+				{
+					NamingStrategy = new CamelCaseNamingStrategy
+					{
+						ProcessDictionaryKeys = true,
+						OverrideSpecifiedNames = false
+					}
+				};
 			});
 
 			services.AddMediatR(typeof(SearchPeople));
